@@ -1,0 +1,44 @@
+<fieldset>
+	<legend style="font-weight:lighter;">Project/Component/Builds Using This Artifact</legend>
+	<ag-grid-angular
+		style="width: 100%; height: 200px;"
+		class="ag-theme-alpine"
+		rowSelection="single"
+
+	 	[gridOptions]="gridOptions"
+	  	[columnDefs]="columnDefs"
+	  	[rowData]="rowData"
+	  	[modules]="modules"
+
+		enableColResize
+		enableSorting
+		enableFilter
+		  
+		(rowSelected)="onRowSelected($event)">
+  	</ag-grid-angular>  
+	<div style="vertical-align:bottom;padding-top:'3px';">
+		<button (click)="toggleForm();" class="button-expander" mat-stroked-button><mat-icon [inline]="true">create</mat-icon></button>
+	</div>
+	<div id="componentForm" [hidden]="isShowForm">
+		<fieldset>
+			<legend style="font-weight:lighter;">Component Info</legend>
+			<mat-form-field>
+				<input matInput [(ngModel)]="projectComponentBuild.component.project_id" placeholder="Project Id" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="projectComponentBuild.component.component_id" placeholder="Component Id" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="projectComponentBuild.build.component_version" placeholder="Build Version" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="projectComponentBuild.component.name" placeholder="Name" disabled>
+			</mat-form-field>
+			<br/>
+			<div class="form-button-row" style="width:100%">
+				<button mat-raised-button color="primary" [disabled]="!mayPermit" (click)="addPermittedProject()">Add Project Permit</button>
+				<button mat-raised-button color="primary" [disabled]="!mayRevoke" (click)="removePermittedProject()">Revoke Project Permit</button>
+			</div>
+		</fieldset>
+	</div>
+</fieldset>

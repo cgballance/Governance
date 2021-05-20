@@ -1,0 +1,59 @@
+<fieldset>
+	<legend style="font-weight:lighter;">Projects</legend>
+	<div>
+		<ag-grid-angular
+	  		style="width: 100%; height: 200px;"
+	  		class="ag-theme-alpine"
+			rowSelection="single"
+
+	 		[gridOptions]="gridOptions"
+	  		[columnDefs]="columnDefs"
+	  		[rowData]="rowData"
+	  		[modules]="modules"
+		  
+			enableColResize
+			enableSorting
+			enableFilter
+		  
+			(rowSelected)="onRowSelected($event)">
+  		</ag-grid-angular>
+	</div>
+	<div style="display: inline-block;vertical-align:bottom;padding-top:3px;">
+		<button (click)="toggleForm();" class="button-expander" mat-stroked-button><mat-icon [inline]="true">create</mat-icon></button>
+	</div>
+	<div id="projectsForm" [hidden]="isShowForm">
+		<fieldset>
+			<legend style="font-weight:lighter;">Project Editor</legend>
+			<mat-form-field>
+				<input matInput [(ngModel)]="projectEditor.project_id" placeholder="Project Id" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="projectEditor.acronym" placeholder="Acronym">
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="projectEditor.business_owner" placeholder="Business Owner">
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="projectEditor.it_owner" placeholder="IT Owner">
+			</mat-form-field>
+			<mat-form-field>
+					<mat-label>Begin Date</mat-label>
+					<input matInput [(ngModel)]="projectEditor.begin_date"  [ngxMatDatetimePicker]="begin_picker">
+					<mat-datepicker-toggle matSuffix [for]="begin_picker"></mat-datepicker-toggle>
+					<ngx-mat-datetime-picker #begin_picker></ngx-mat-datetime-picker>
+			</mat-form-field>
+			<mat-form-field>
+				<mat-label>End Date</mat-label>
+				<input matInput [(ngModel)]="projectEditor.end_date"  [ngxMatDatetimePicker]="end_picker">
+				<mat-datepicker-toggle matSuffix [for]="end_picker"></mat-datepicker-toggle>
+				<ngx-mat-datetime-picker #end_picker></ngx-mat-datetime-picker>
+			</mat-form-field>
+			<br/>
+			<div class="form-button-row" style="width:100%">
+				<button mat-raised-button color="primary" (click)="preUpdateProject()">Update</button>
+				<button mat-raised-button color="primary" (click)="preCreateProject()">Create</button>
+				<button mat-raised-button color="primary" (click)="preDeleteProject()">Delete</button>
+			</div>
+		</fieldset>
+	</div>
+</fieldset>

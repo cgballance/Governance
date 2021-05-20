@@ -1,0 +1,52 @@
+@import "../../../../node_modules/@ag-grid-community/all-modules/dist/styles/ag-grid.scss";
+@import "../../../../node_modules/@ag-grid-community/all-modules/dist/styles/ag-theme-alpine/sass/ag-theme-alpine.scss";
+
+section {
+    display: table;
+  }
+  
+  .form-button-row {
+    display: table-cell;
+    width: 490px;
+  }
+  
+  .form-button-row .mat-button-base {
+    margin: 6px 6px 6px 0;
+  }
+  
+  .button-expander {
+  height: 20px;
+  width: 20px;
+  line-height: 20px;
+  text-align: center;
+  }
+
+  .button-search {
+    height: 25px;
+    width: 25px;
+    line-height: 25px;
+    text-align: center;
+  }
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 3px 0px 3px 0px;
+  }
+
+  li {
+    list-style-type: none;
+    margin: 0;
+    padding: 4px 0px 4px 0px;
+  }
+
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .mat-radio-button {
+      font-size: smaller
+  }
+  

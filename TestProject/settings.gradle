@@ -1,0 +1,12 @@
+pluginManagement {
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.namespace == 'com.webforged.enforcer') {
+                useModule("com.webforged.enforcer:GradleGovernancePlugin:1.0")
+            }
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}

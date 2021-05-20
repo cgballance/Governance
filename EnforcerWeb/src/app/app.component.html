@@ -1,0 +1,39 @@
+<mat-toolbar color="primary" class="expanded-toolbar">
+    <span>
+      <button mat-button routerLink="/">{{title}}</button>
+    </span>
+  <div fxLayout="row" fxShow="false" fxShow.gt-sm>
+    <button mat-button *ngIf="!isAuthenticated" (click)="login();">
+      <mat-icon>login</mat-icon>
+      Login
+    </button>
+    <button mat-button *ngIf="isAuthenticated" (click)="logout();">
+      <mat-icon>logout</mat-icon>
+      Logout
+    </button>
+  </div>
+  <span class="menu-spacer"></span>
+  <small><label>{{username}}</label></small>
+</mat-toolbar>
+<app-login *ngIf="!isAuthenticated" ></app-login>
+<mat-tab-group *ngIf="isAuthenticated" >
+    <mat-tab label="Project View">
+        <br/>
+        <app-project-projects></app-project-projects>
+        <app-project-artifacts></app-project-artifacts>
+        <app-project-licensed></app-project-licensed>
+        <app-project-allowed></app-project-allowed>
+    </mat-tab>
+    <mat-tab label="Build View">
+      <br/>
+      <app-build-projects></app-build-projects>
+      <app-build-components></app-build-components>
+      <app-build-builds></app-build-builds>
+      <app-build-items></app-build-items>
+    </mat-tab>
+    <mat-tab label="Artifact View">
+      <app-artifact-artifacts></app-artifact-artifacts>
+      <app-artifact-usage></app-artifact-usage>
+      <app-artifact-versions></app-artifact-versions>
+    </mat-tab>
+</mat-tab-group>

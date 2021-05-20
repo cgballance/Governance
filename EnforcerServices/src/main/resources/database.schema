@@ -1,0 +1,123 @@
+--
+-- The Governance database herein is assumed to be linked to a CMDB, which should be linked through a few common fields.
+-- The project_id, contract, vendor are things typically represented somehow in a CMDB(BMC Atrium, Alfabet).
+-- Builds are linked into deployments, which are typically pushed through a workflow application in the ITSM space(ServiceNow, AWS Config) and
+-- linked, as well, into the CMDB.
+--
+-- TODO Liquibase this...
+--
+
+create database Governance;
+use Governance;
+
+--
+-- Projects are the linkage between the artifacts in the universe and those allowed to be used by a project.
+-- LicensedArtifacts and AllowedArtifacts require Project existence.
+--
+create table Projects (
+	project_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	acronym VARCHAR(32),
+	business_owner VARCHAR(256),
+	it_owner VARCHAR(256),
+	begin_date TIMESTAMP,
+	end_date TIMESTAMP
+) ;
+create unique index Projects_acronym_idx on Projects(acronym) ;
+create index Projects_bo_idx on Projects(business_owner);
+create index Projects_it_idx on Projects(it_owner);
+
+--
+-- Components are the deployable/referencable objects used by a project and its builds.
+-- Note that artifacts used by a build are made available on the Project level, but may
+-- only be used by a single component of a Project.  However, it is available Project-wide.
+--
+create table Components (
+	component_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	project_id  INT,
+	name VARCHAR(256),
+	CONSTRAINT fk_comp_project_id FOREIGN KEY (project_id) REFERENCES Projects(project_id)
+) ;
+create unique index ComponentsCompProj on Components(project_id,name);
+
+--
+-- CREATED => Journaled into the system, ready to be approved in some fashion.
+-- LIMITED => occurs either before GA or after with different meanings. Either POC type usage or testing for suitability. Or, only a select group can use it.
+-- GA =>  General Availability anybody can use
+-- DEPRECATED => On its way to retirement, either a new version is available and projects should upgrade, or they could be put onto LIMITED usage
+-- LIMITED-DEPRECATED => If the artifact was LIMITED, then this is the way to DEPRECATE the artifact.
+-- RETIRED => Not usable by any product(Too old, obsolete).
+--
+create table Artifacts (
+	artifact_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	status VARCHAR(32) CONSTRAINT status_ck CHECK (status IN ('CREATED', 'GA', 'DEPRECATED', 'LIMITED', 'LIMITED_DEPRECATED', 'RETIRED') ),
+	group_name VARCHAR(256),
+	artifact_name VARCHAR(256),
+	version_name VARCHAR(256),
+	is_vendor_licensed BOOLEAN default false,
+	created_date TIMESTAMP, -- no authorization, system or user created, attribution not necessary.
+	approval_date TIMESTAMP,
+	approval_authorization VARCHAR(256),
+	approval_ts TIMESTAMP,
+	deprecation_date TIMESTAMP,
+	deprecation_authorization VARCHAR(256),
+	deprecation_ts TIMESTAMP,
+	retirement_date TIMESTAMP,
+	retirement_authorization VARCHAR(256),
+	retirement_ts TIMESTAMP
+) ;
+
+create unique index Artifact_mvn_idx on Artifacts(group_name,artifact_name,version_name) ;
+create index Artifact_apprv_idx on Artifacts(approval_authorization);
+create index Artifact_apprv_date_idx on Artifacts(approval_date);
+create index Artifact_status_idx on Artifacts(status);
+
+create table LicensedArtifacts (
+	lic_artifact_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	artifact_id INT,
+	project_id INT,
+	contract VARCHAR(256),
+	vendor VARCHAR(256),
+	approval_architect VARCHAR(256),
+	approval_ts TIMESTAMP,
+	CONSTRAINT fk_artifact_id FOREIGN KEY (artifact_id) REFERENCES Artifacts(artifact_id),
+	CONSTRAINT fk_project_id FOREIGN KEY (project_id) REFERENCES Projects(project_id)
+) ;
+create unique index LicensedArtProj on LicensedArtifacts(artifact_id,project_id);
+
+create table AllowedArtifacts (
+	allowed_artifact_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	artifact_id INT,
+	project_id INT,
+	approval_architect VARCHAR(256),
+	approval_ts TIMESTAMP,
+	CONSTRAINT fk_artifact_id FOREIGN KEY (artifact_id) REFERENCES Artifacts(artifact_id),
+	CONSTRAINT fk_project_id FOREIGN KEY (project_id) REFERENCES Projects(project_id)
+) ;
+
+create unique index AllowedArtProj on AllowedArtifacts(artifact_id,project_id);
+
+create table Builds (
+	build_id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	build_ts TIMESTAMP,
+	project_id INT, -- TODO Denormalized field that should be removed. 
+	component_id INT,
+	component_version VARCHAR(512),
+	infractions VARCHAR(32672), -- max length for derby
+	source VARCHAR(128),
+	CONSTRAINT fk_project_id FOREIGN KEY (project_id) REFERENCES Projects(project_id),
+	CONSTRAINT fk_comp_id FOREIGN KEY (component_id) REFERENCES Components(component_id)
+);
+create index Builds_project_idx on Builds(project_id) ;
+
+create table BuildItems (
+	builditem_id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	build_id BIGINT,
+	group_name VARCHAR(256),
+	artifact_name VARCHAR(256),
+	version_name VARCHAR(256),
+	artifact_status_snapshot VARCHAR(28),
+	allowed BOOLEAN,
+	CONSTRAINT fk_build_id FOREIGN KEY (build_id) REFERENCES Builds(build_id)
+) ;
+
+go

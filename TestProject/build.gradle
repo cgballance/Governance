@@ -1,0 +1,40 @@
+plugins {
+	id 'java' // so that we can use 'implementation', 'testImplementation' for dependencies
+	id 'com.webforged.enforcer.GradleGovernancePlugin' version '1.0'  // GOVERNANCE TO BE INJECTED
+}
+
+repositories {
+	mavenCentral()
+	mavenLocal() // GOVERNANCE TO BE INJECTED? probably not..use non-internet repo
+}
+
+dependencies {
+	//implementation (group: 'com.webforged.enforcer', name: 'GradleGovernancePlugin', version: '1.0')
+	implementation (group: 'commons-logging', name: 'commons-logging', version: '1.1.1')
+	implementation (group: 'org.infinispan', name: 'infinispan-core', version: '7.2.0.Beta2')
+	implementation (group: 'org.springframework', name: 'spring-core', version: '5.3.4')
+}
+
+project.group = 'org.webforged.enforcer'
+project.version = '0.0.1'
+
+//
+// Required by application development
+//
+ext {
+	acronym = 'DIY'
+}
+
+//
+// The following things are to be injected into the build script via devops
+//
+apply plugin: com.webforged.enforcer.GradleGovernancePlugin
+governance.GovernanceExtension {
+	jdbcUrl = 'jdbc:postgresql://localhost:5432/governance'
+	jdbcUser = 'enforcer'
+	jdbcPassword = 'enforcer'
+	jdbcDriverClass = 'org.postgresql.Driver'
+}
+build {
+	dependsOn governance
+}

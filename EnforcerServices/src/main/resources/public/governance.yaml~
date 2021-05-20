@@ -1,0 +1,2075 @@
+openapi: 3.0.0
+info:
+  description: This is the Enforcer Governance Management system.  The API allows one to read all the entities that make up the governance store.
+               The store is broken down into two parts&colon; Governance and Build.  Governance contains the Artifacts that are available for a Project
+               to use.  AllowedArtifacts and LicensedArtifacts are specializations of Artifact that further deal with library usage that is not standard
+               or is subject to special dispensation.  The Governance aspect can be thought of as the universe of things that are usable.
+               Build contains the results of applying the Maven Enforcer to a project's build submission.  It is what results when mvn is run on a project.
+               The enforcer component is a Maven plugin that allows the system to see exactly what libraries are being used in the build process.  By validating
+               the libraries that a Project uses against the Governance state, we generate Bill of Materials(BOM) and infractions that need remediation in order for
+               a successful build to occur.  The enforcer plugin will cause a build to fail if it doesn't use approved libraries.
+  version: 1.0.0
+  title: Enforcer Software Governance
+  termsOfService: https://localhost:8443/terms.html
+  contact:
+    email: cgballance@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: Governance State
+    description: Governance State are those things that define the permissible universe of resources that a project may use.
+    #externalDocs:
+  - name: Build State
+    description: Build State encompasses submitted project build related Bill Of Material(BOM) information.
+paths:
+  /projects:
+    get:
+      tags:
+        - Build State
+      summary: retrieve all projects
+      description: Retrieve all Projects.
+                   A project's acronym and component name provide the key for dealing with projects.
+      operationId: findProjects
+      responses:
+        "201":
+          description:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+        "405":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+    post:
+      tags:
+        - Build State
+      summary: Add a new Project
+      description: Add a new Project. This is typically done automatically through the first build that is executed for a distributable component.
+                   A project's acronym and component name provide the key for dealing with projects.
+      operationId: addProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Project"
+        description: Project object that needs to be added
+        required: true
+      responses:
+        "201":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "400":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance, SUPERUSER_architect]
+    put:
+      tags:
+        - Build State
+      summary: Update an existing project
+      description: Update an existing Project
+      operationId: updateProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Project"
+        description: Project object that needs to be updated in the store
+        required: true
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+  /projects/findByAcronym:           
+    get:
+      tags:
+        - Build State
+      summary: Finds Projects by project acronym
+      description: Find projects given a project acronym
+      operationId: findProjectsByAcronym
+      parameters:
+        - name: acronym
+          in: query
+          description: acronym value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /projects/findByITOwner:           
+    get:
+      tags:
+        - Build State
+      summary: Finds Projects by it owner
+      description: Find projects given a it owner
+      operationId: findProjectsByITOwner
+      parameters:
+        - name: it_owner
+          in: query
+          description: acronym value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /projects/findByBusinessOwner:           
+    get:
+      tags:
+        - Build State
+      summary: Finds Projects by business owner
+      description: Find projects given a business owner
+      operationId: findProjectsByBusinessOwner
+      parameters:
+        - name: business_owner
+          in: query
+          description: acronym value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /projects/findPermittedProjectsByArtifactId:           
+    get:
+      tags:
+        - Build State
+      summary: 
+      description:
+      operationId: findPermittedProjectsByArtifactId
+      parameters:
+        - name: artifactId
+          in: query
+          description: artifactId value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  "/projects/{project_id}":
+    get:
+      tags:
+        - Build State
+      summary: Find project by ID
+      description: Returns a single project
+      operationId: findProjectById
+      parameters:
+        - name: project_id
+          in: path
+          description: ID of project to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "404":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+    delete:
+      tags:
+        - Build State
+      summary: Deletes a project
+      description: ""
+      operationId: deleteProject
+      parameters:
+        - name: project_id
+          in: path
+          description: Project id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+        "404":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance, SUPERUSER_architect]
+  /components:
+    post:
+      tags:
+        - Build State
+      summary: Add a new Component to a Project
+      description: Add a new Component. This is typically done automatically through the first build that is executed for a distributable component.
+                   A project's acronym and component name provide the key for dealing with projects.
+      operationId: addComponent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Component"
+        description: Component object that needs to be added
+        required: true
+      responses:
+        "201":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Component"
+        "400":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+    put:
+      tags:
+        - Build State
+      summary: Update an existing component
+      description: Update an existing Component
+      operationId: updateComponent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Component"
+        description: Component object that needs to be updated in the store
+        required: true
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+  /components/findByProjectId:           
+    get:
+      tags:
+        - Build State
+      summary: Finds Components by project id
+      description: Find components given a project id
+      operationId: findComponentsByProjectId
+      parameters:
+        - name: projectId
+          in: query
+          description: id value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Component"
+        "404":
+          description: not found
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /components/findByArtifactId:
+    get:
+      tags:
+        - Build State
+      summary: Finds Components by artifact id
+      description: Find components given an artifact id
+      operationId: findComponentsByArtifactId
+      parameters:
+        - name: artifactId
+          in: query
+          description: artifact id value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Component"
+        "404":
+          description: not found
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /components/findByProjectAcronym:           
+    get:
+      tags:
+        - Build State
+      summary: Finds Components by project acronym
+      description: Find components given a project acronym
+      operationId: findComponentsByProjectAcronym
+      parameters:
+        - name: acronym
+          in: query
+          description: acronym value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Component"
+        "404":
+          description: not found
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  "/components/{component_id}":
+    get:
+      tags:
+        - Build State
+      summary: Find component by ID
+      description: Returns a single component
+      operationId: findComponentById
+      parameters:
+        - name: component_id
+          in: path
+          description: ID of component to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Component"
+        "404":
+          description: not found
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+    delete:
+      tags:
+        - Build State
+      summary: Deletes a component
+      description: ""
+      operationId: deleteComponent
+      parameters:
+        - name: component_id
+          in: path
+          description: Component id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+        "404":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]      
+  /artifacts:
+    post:
+      tags:
+        - Governance State
+      summary: Add a new artifact to the governance store
+      description: ""
+      operationId: addArtifact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Artifact"
+        description: Artifact object that needs to be added to the store
+        required: true
+      responses:
+        "201":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Artifact"
+        "400":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+    put:
+      tags:
+        - Governance State
+      summary: Update an existing artifact
+      description: ""
+      operationId: updateArtifact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Artifact"
+        description: Artifact object that needs to be updated in the store
+        required: true
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+  /artifacts/findByProjectId:
+    get:
+      tags:
+        - Governance State
+      summary: Finds Artifacts by project id
+      description: Find artifacts given a status
+      operationId: findArtifactsByProjectId
+      parameters:
+        - name: projectId
+          in: query
+          description: project id value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Artifact"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /artifacts/findByStatus:
+    get:
+      tags:
+        - Governance State
+      summary: Finds Artifacts by status
+      description: Find artifacts given a status
+      operationId: findArtifactsByStatus
+      parameters:
+        - name: status
+          in: query
+          description: Status value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Artifact"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /artifacts/findByApprover:
+    get:
+      tags:
+        - Governance State
+      summary: Finds Artifacts by approver
+      description: find artifacts given an approver id/name
+      operationId: findArtifactsByApprover
+      parameters:
+        - name: approver
+          in: query
+          description: approver value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Artifact"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+         - governance_auth:
+            - [read_governance]
+  /artifacts/findByGroupNameAndArtifactName:
+    get:
+      tags:
+        - Governance State
+      summary: Finds Artifacts by group name and artifact name
+      description: find artifacts given an group name + artifact name
+      operationId: findArtifactsByGroupNameAndArtifactName
+      parameters:
+        - name: groupName
+          in: query
+          description: group name used by filter
+          required: true
+          explode: true
+          schema:
+            type: string
+        - name: artifactName
+          in: query
+          description: artifact name used by filter
+          required: false
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Artifact"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+         - governance_auth:
+            - [read_governance]
+  /artifacts/findApprovedByDateRange:
+    get:
+      tags:
+        - Governance State
+      summary: Finds Artifacts by a date range.
+      description: find artifacts given an date range.
+      operationId: findArtifactsByDateRange
+      parameters:
+        - name: fromDate
+          in: query
+          description: starting date used by filter
+          required: true
+          explode: true
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          description: ending date used by filter
+          required: true
+          explode: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Artifact"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+         - governance_auth:
+            - [read_governance]
+  "/artifacts/{artifact_id}":
+    get:
+      tags:
+        - Governance State
+      summary: Find artifact by ID
+      description: Returns a single artifact
+      operationId: findArtifactById
+      parameters:
+        - name: artifact_id
+          in: path
+          description: ID of artifact to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Artifact"
+        "404":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+         - governance_auth:
+            - [read_governance]
+    delete:
+      tags:
+        - Governance State
+      summary: Deletes a artifact
+      description: ""
+      operationId: deleteArtifact
+      parameters:
+        - name: artifact_id
+          in: path
+          description: Artifact id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+         - governance_auth:
+            - [write_governance]
+  /allowedartifacts:
+    post:
+      tags:
+        - Governance State
+      summary: Add a new allowed artifact to the governance store
+      description: ""
+      operationId: addAllowedArtifact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AllowedArtifact"
+        description: Artifact object that needs to be added to the store
+        required: true
+      responses:
+        "201":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AllowedArtifact"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+    put:
+      tags:
+        - Governance State
+      summary: Update an existing allowedartifact
+      description: ""
+      operationId: updateAllowedArtifact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AllowedArtifact"
+        description: Artifact object that needs to be updated in the store
+        required: true
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+  /allowedartifacts/findByArtifactId:           
+    get:
+      tags:
+        - Governance State
+      summary: Finds Allowed Artifacts by artifact id
+      description: Find allowedartifacts given a artifact id
+      operationId: findAllowedArtifactsByArtifactId
+      parameters:
+        - name: artifactId
+          in: query
+          description: artifact id  value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AllowedArtifact"
+        "404":
+          description: not found
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /allowedartifacts/findByProjectId:           
+    get:
+      tags:
+        - Governance State
+      summary: Finds Allowed Artifacts by project id
+      description: Find allowedartifacts given a project id
+      operationId: findAllowedArtifactsByProject
+      parameters:
+        - name: projectId
+          in: query
+          description: project id  value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AllowedArtifact"
+        "404":
+          description: not found
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /allowedartifacts/findByProjectAcronym:           
+    get:
+      tags:
+        - Governance State
+      summary: Finds Allowed Artifacts by project acronym
+      description: Find allowedartifacts given a project acronym
+      operationId: findAllowedArtifactsByProjectAcronym
+      parameters:
+        - name: acronym
+          in: query
+          description: acronym value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AllowedArtifact"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /allowedartifacts/{allowed_artifact_id}:
+    get:
+      tags:
+        - Governance State
+      summary: Find allowed artifact by ID
+      description: Returns a single allowed artifact
+      operationId: findAllowedArtifactById
+      parameters:
+        - name: allowed_artifact_id
+          in: path
+          description: ID of artifact to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AllowedArtifact"
+        "404":
+          description: not found
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+    delete:
+      tags:
+        - Governance State
+      summary: Deletes a artifact
+      description: ""
+      operationId: deleteAllowedArtifact
+      parameters:
+        - name: allowed_artifact_id
+          in: path
+          description: AllowedArtifact id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+  /allowedartifacts/deleteAllowedArtifactsByArtifactId:
+    post:
+      tags:
+        - Governance State
+      summary: Deletes allowedartifact(s) by artifact id
+      description: ""
+      operationId: deleteAllowedArtifactsByArtifactId
+      parameters:
+        - name: artifactId
+          in: query
+          description: kill all records referencing this
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+  /allowedartifacts/deleteAllowedArtifactByProjectIdAndArtifactId:
+    post:
+      tags:
+        - Governance State
+      summary: Deletes an artifact by project/artifact ids
+      description: ""
+      operationId: deleteAllowedArtifactByProjectIdAndArtifactId
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectArtifactKeys'
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+  /licensedartifacts:
+    post:
+      tags:
+        - Governance State
+      summary: Add a new licensed artifact to the governance store
+      description: ""
+      operationId: addLicensedArtifact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LicensedArtifact"
+        description: LicensedArtifact object that needs to be added to the store
+        required: true
+      responses:
+        "201":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LicensedArtifact"
+        "400":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+    put:
+      tags:
+        - Governance State
+      summary: Update an existing licensedartifact
+      description: ""
+      operationId: updateLicensedArtifact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LicensedArtifact"
+        description: Licensed Artifact object that needs to be updated in the store
+        required: true
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+  /licensedartifacts/findByArtifactId:           
+    get:
+      tags:
+        - Governance State
+      summary: Finds Licensed Artifacts by artifact id
+      description: Find licensedartifacts given a artifact id
+      operationId: findLicensedArtifactsByArtifactId
+      parameters:
+        - name: artifactId
+          in: query
+          description: artifact id  value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LicensedArtifact"
+        "404":
+          description: not found
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /licensedartifacts/findByProjectId:           
+    get:
+      tags:
+        - Governance State
+      summary: Finds Licensed Artifacts by project id
+      description: Find licensedartifacts given a project id
+      operationId: findLicensedArtifactsByProject
+      parameters:
+        - name: projectId
+          in: query
+          description: project id  value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LicensedArtifact"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /licensedartifacts/findByProjectAcronym:           
+    get:
+      tags:
+        - Governance State
+      summary: Finds Licensed Artifacts by project acronym
+      description: Find licensedartifacts given a project acronym
+      operationId: findLicensedArtifactsByProjectAcronym
+      parameters:
+        - name: acronym
+          in: query
+          description: acronym value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LicensedArtifact"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /licensedartifacts/findByVendor:           
+    get:
+      tags:
+        - Governance State
+      summary: Finds Licensed Artifacts by vendor
+      description: Find licensedartifacts given a project acronym
+      operationId: findLicensedArtifactsByVendor
+      parameters:
+        - name: vendor
+          in: query
+          description: vendor value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LicensedArtifact"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /licensedartifacts/{licencedArtifactId}:
+    get:
+      tags:
+        - Governance State
+      summary: Find licensed artifact by ID
+      description: Returns a single licensed artifact
+      operationId: findLicensedArtifactById
+      parameters:
+        - name: licencedArtifactId
+          in: path
+          description: ID of artifact to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LicensedArtifact"
+        "404":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+    delete:
+      tags:
+        - Governance State
+      summary: Deletes a artifact
+      description: ""
+      operationId: deleteLicensedArtifact
+      parameters:
+        - name: licencedArtifactId
+          in: path
+          description: licencedArtifactId id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+  /licensedartifacts/deleteLicensedArtifactsByArtifactId:
+    post:
+      tags:
+        - Governance State
+      summary: Deletes licensedartifact(s) by artifact id
+      description: ""
+      operationId: deleteLicensedArtifactsByArtifactId
+      parameters:
+        - name: artifactId
+          in: query
+          description: kill all records referencing this
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+  /licensedartifacts/deleteLicensedArtifactByProjectIdAndArtifactId:
+    post:
+      tags:
+        - Governance State
+      summary: Deletes an artifact by project/artifact ids
+      description: ""
+      operationId: deleteLicensedArtifactByProjectIdAndArtifactId
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectArtifactKeys'
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+  /builds:
+    post:
+      tags:
+        - Build State
+      summary: Add a new build to the governance store
+      description: ""
+      operationId: addBuild
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Build"
+        description: Build object that needs to be added to the store
+        required: true
+      responses:
+        "201":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Build"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+    put:
+      tags:
+        - Build State
+      summary: Update an existing build
+      description: ""
+      operationId: updateBuild
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Build"
+        description: Build object that needs to be updated in the store
+        required: true
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+  /builds/findByComponentId:           
+    get:
+      tags:
+        - Build State
+      summary: Find Builds by component id
+      description: Find builds given a component id
+      operationId: findBuildsByComponentId
+      parameters:
+        - name: componentId
+          in: query
+          description: componentId value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Build"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /builds/findByProjectId:           
+    get:
+      tags:
+        - Build State
+      summary: Find Builds by project acronym
+      description: Find builds given a project id
+      operationId: findBuildsByProjectId
+      parameters:
+        - name: projectId
+          in: query
+          description: projectId value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Build"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /builds/findByProjectAcronym:           
+    get:
+      tags:
+        - Build State
+      summary: Find Builds by project acronym
+      description: Find builds given a project acronym
+      operationId: findBuildsByProjectAcronym
+      parameters:
+        - name: acronym
+          in: query
+          description: acronym value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Build"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  "/builds/{build_id}":
+    get:
+      tags:
+        - Build State
+      summary: Find build by ID
+      description: Returns a single build
+      operationId: findBuildById
+      parameters:
+        - name: build_id
+          in: path
+          description: ID of build to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Build"
+        "404":
+          description: not found
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+    delete:
+      tags:
+        - Build State
+      summary: Deletes a build
+      description: ""
+      operationId: deleteBuild
+      parameters:
+        - name: build_id
+          in: path
+          description: Build id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]           
+  /builditems:
+    post:
+      tags:
+        - Build State
+      summary: Add a new builditem to the governance store
+      description: ""
+      operationId: addBuildItem
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BuildItem"
+        description: BuildItem object that needs to be added to the store
+        required: true
+      responses:
+        "201":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BuildItem"
+        "400":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+    put:
+      tags:
+        - Build State
+      summary: Update an existing build item
+      description: ""
+      operationId: updateBuildItem
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BuildItem"
+        description: BuildItem object that needs to be updated in the store
+        required: true
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+  "/builditems/{builditem_id}":
+    get:
+      tags:
+        - Build State
+      summary: Find builditem by ID
+      description: Returns a single build
+      operationId: findBuildItemById
+      parameters:
+        - name: builditem_id
+          in: path
+          description: ID of builditem to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BuildItem"
+        "404":
+          description: not found
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+  /builditems/findByBuildId:           
+    get:
+      tags:
+        - Build State
+      summary: Find BuildItems by build id
+      description: Find builditems given a build id
+      operationId: findBuildItemsByBuildId
+      parameters:
+        - name: buildId
+          in: query
+          description: buildId value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BuildItem"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+    delete:
+      tags:
+        - Build State
+      summary: Deletes a build item
+      description: ""
+      operationId: deleteBuildItem
+      parameters:
+        - name: build_id
+          in: path
+          description: BuildItem id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [write_governance]
+  /experimental/findProjectComponentBuildsByArtifactId:           
+    get:
+      tags:
+        - Build State
+      summary: 
+      description:
+      operationId: findProjectComponentBuildsByArtifactId
+      parameters:
+        - name: artifactId
+          in: query
+          description: artifactId value that needs to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProjectComponentBuild"
+        "500":
+          description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - governance_auth:
+            - [read_governance]
+externalDocs:
+  description: Find out more about Governing Maven library usage for your development team.
+  url: https://localhost:8443/index.html
+servers:
+  - url: https://localhost:8443/v1
+security:
+  - governance_auth: []
+components:
+  securitySchemes:
+    governance_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Project:
+      type: object
+      required:
+        - acronym
+        - component
+      properties:
+        project_id:
+          type: integer
+          format: int64
+        acronym:
+          type: string
+        business_owner:
+          type: string
+        it_owner:
+          type: string
+        begin_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+    Component:
+      type: object
+      required:
+        - project_id
+      properties:
+        component_id:
+          type: integer
+          format: int64
+        project_id:
+          type: integer
+          format: int64
+        name:
+          type: string
+    Artifact:
+      type: object
+      required:
+        - group_name
+        - artifact_name
+        - version_name
+      properties:
+        artifact_id:
+          type: integer
+          format: int64
+        status:
+          type: string
+          enum: &STATUS
+            - CREATED 
+            - GA
+            - DEPRECATED
+            - LIMITED
+            - LIMITED_DEPRECATED
+            - RETIRED
+        group_name:
+          type: string
+        artifact_name:
+          type: string
+        version_name:
+          type: string
+        created_date:
+          type: string
+          format: date-time
+        approval_date:
+          type: string
+          format: date-time
+        approval_authorization:
+          type: string
+        approval_ts:
+          type: string
+          format: date-time
+        deprecation_date:
+          type: string
+          format: date-time
+        deprecation_authorization:
+          type: string
+        deprecation_ts:
+          type: string
+          format: date-time
+        retirement_date:
+          type: string
+          format: date-time
+        retirement_authorization:
+          type: string
+        retirement_ts:
+          type: string
+          format: date-time
+        is_vendor_licensed:
+          type: boolean
+    AllowedArtifact:
+      type: object
+      required:
+        - artifact_id
+        - project_id
+      properties:
+        allowed_artifact_id:
+          type: integer
+          format: int64
+        artifact_id:
+          type: integer
+          format: int64
+        project_id:
+          type: integer
+          format: int64
+        approval_architect:
+          type: string
+        approval_ts:
+          type: string
+          format: date-time
+    LicensedArtifact:
+      type: object
+      required:
+        - artifact_id
+        - project_id
+      properties:
+        licensed_artifact_id:
+          type: integer
+          format: int64
+        artifact_id:
+          type: integer
+          format: int64
+        project_id:
+          type: integer
+          format: int64
+        contract:
+          type: string
+        vendor:
+          type: string
+        approval_architect:
+          type: string
+        approval_ts:
+          type: string
+          format: date-time
+    Build:
+      type: object
+      required:
+        - project_id
+      properties:
+        build_id:
+          type: integer
+          format: int64
+        build_ts:
+          type: string
+          format: date-time
+        project_id:
+          type: integer
+          format: int64
+        component_id:
+          type: integer
+          format: int64
+        component_version:
+          type: string
+        infractions:
+          type: string
+        source:
+          type: string
+    BuildItem:
+      type: object
+      required:
+        - build_id
+      properties:
+        builditem_id:
+          type: integer
+          format: int64
+        build_id:
+          type: integer
+          format: int64
+        group_name:
+          type: string
+        artifact_name:
+          type: string
+        version_name:
+          type: string
+        artifact_status_snapshot:
+          type: string
+        allowed:
+          type: boolean
+    ProjectComponentBuild:
+        type: object
+        properties:
+          project:
+            $ref: "#/components/schemas/Project"
+          component: 
+            $ref: "#/components/schemas/Component"
+          build: 
+            $ref: "#/components/schemas/Build"
+    ProjectArtifactKeys:
+      type: object
+      required:
+        - artifact_id
+        - project_id
+      properties:
+        artifact_id:
+          type: integer
+          format: int64
+        project_id:
+          type: integer
+          format: int64
+    Error:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        detail:
+          type: string

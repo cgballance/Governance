@@ -1,0 +1,136 @@
+<fieldset>
+	<legend style="font-weight:lighter;">Artifacts</legend>
+	<div style="float:left;">
+		<fieldset style="height: 210px;">
+			<legend style="font-size:small;">Find By Status</legend>
+			<div>
+				<mat-radio-group [(ngModel)]="statusToGet">
+				<ul style="font-size: small;">
+					<li><mat-radio-button value = "CREATED" color="primary">CREATED</mat-radio-button></li>
+					<li><mat-radio-button value="GA" color="primary">GA</mat-radio-button></li>
+					<li><mat-radio-button value="DEPRECATED" color="primary">DEPRECATED</mat-radio-button></li>
+					<li><mat-radio-button value="LIMITED" color="primary">LIMITED</mat-radio-button></li>
+					<li><mat-radio-button value="LIMITED_DEPRECATED" color="primary">LIMITED_DEPRECATED</mat-radio-button></li>
+					<li><mat-radio-button value="RETIRED" color="primary">RETIRED</mat-radio-button></li>
+				</ul>
+				</mat-radio-group>
+					<div class="center">
+						<button mat-raised-button color="primary" class="button-search" (click)="search();">
+							<mat-icon>search</mat-icon>
+						</button>
+					</div>
+			</div>
+		</fieldset>
+	</div>
+	<ag-grid-angular
+		style="width: 100%; height: 210px;"
+		class="ag-theme-alpine"
+		rowSelection="single"
+
+	 	[gridOptions]="gridOptions"
+	  	[columnDefs]="columnDefs"
+	  	[rowData]="rowData"
+	  	[modules]="modules"
+
+		enableColResize
+		enableSorting
+		enableFilter
+		  
+		(rowSelected)="onRowSelected($event)">
+  	</ag-grid-angular>  
+	<div style="vertical-align:bottom;padding-top:'3px';">
+		<button (click)="toggleForm();" class="button-expander" mat-stroked-button><mat-icon [inline]="true">create</mat-icon></button>
+	</div>
+	<div id="artifactsForm" [hidden]="isShowForm">
+		<fieldset>
+			<legend style="font-weight:lighter;">Artifact Editor</legend>
+			<mat-form-field>
+				<input matInput [(ngModel)]="artifactEditor.artifact_id" placeholder="Artifact Id" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<mat-label>Status</mat-label>
+				<mat-select [(ngModel)]="artifactEditor.status">
+					<mat-option value="CREATED">CREATED</mat-option>
+					<mat-option value="GA">GA</mat-option>
+					<mat-option value="DEPRECATED">DEPRECATED</mat-option>
+					<mat-option value="LIMITED">LIMITED</mat-option>
+					<mat-option value="LIMITED_DEPRECATED">LIMITED_DEPRECATED</mat-option>
+					<mat-option value="RETIRED">RETIRED</mat-option>
+				</mat-select>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="artifactEditor.group_name" placeholder="Group Name">
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="artifactEditor.artifact_name" placeholder="Artifact Name">
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="artifactEditor.version_name" placeholder="Version Name">
+			</mat-form-field>
+			<mat-form-field>
+				<mat-label>Vendor Licensed</mat-label>
+				<mat-select [(ngModel)]="artifactEditor.is_vendor_licensed">
+					<mat-option [value]=true>true</mat-option>
+					<mat-option [value]=false>false</mat-option>
+				</mat-select>
+			</mat-form-field>
+			<mat-form-field>
+				<mat-label>Created Date</mat-label>
+				<input matInput [(ngModel)]="artifactEditor.created_date"  [ngxMatDatetimePicker]="created_date_picker">
+				<mat-datepicker-toggle matSuffix [for]="created_date_picker"></mat-datepicker-toggle>
+				<ngx-mat-datetime-picker #created_date_picker></ngx-mat-datetime-picker>
+			</mat-form-field>
+			<mat-form-field>
+				<mat-label>Approval Date</mat-label>
+				<input matInput [(ngModel)]="artifactEditor.approval_date"  [ngxMatDatetimePicker]="approval_date_picker">
+				<mat-datepicker-toggle matSuffix [for]="approval_date_picker"></mat-datepicker-toggle>
+				<ngx-mat-datetime-picker #approval_date_picker></ngx-mat-datetime-picker>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="artifactEditor.approval_authorization" placeholder="Approval Authorization">
+			</mat-form-field>
+			<mat-form-field>
+				<mat-label>Approval Timestamp</mat-label>
+				<input matInput [(ngModel)]="artifactEditor.approval_ts"  [ngxMatDatetimePicker]="approval_ts_picker">
+				<mat-datepicker-toggle matSuffix [for]="approval_ts_picker"></mat-datepicker-toggle>
+				<ngx-mat-datetime-picker #approval_ts_picker></ngx-mat-datetime-picker>
+			</mat-form-field>
+			<mat-form-field>
+				<mat-label>Deprecation Date</mat-label>
+				<input matInput [(ngModel)]="artifactEditor.deprecation_date"  [ngxMatDatetimePicker]="deprecation_date_picker">
+				<mat-datepicker-toggle matSuffix [for]="deprecation_date_picker"></mat-datepicker-toggle>
+				<ngx-mat-datetime-picker #deprecation_date_picker></ngx-mat-datetime-picker>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="artifactEditor.deprecation_authorization" placeholder="Deprecation Authorization">
+			</mat-form-field>
+			<mat-form-field>
+				<mat-label>Deprecation Timestamp</mat-label>
+				<input matInput [(ngModel)]="artifactEditor.deprecation_ts"  [ngxMatDatetimePicker]="deprecation_ts_picker">
+				<mat-datepicker-toggle matSuffix [for]="deprecation_ts_picker"></mat-datepicker-toggle>
+				<ngx-mat-datetime-picker #deprecation_ts_picker></ngx-mat-datetime-picker>
+			</mat-form-field>
+			<mat-form-field>
+				<mat-label>Retirement Date</mat-label>
+				<input matInput [(ngModel)]="artifactEditor.retirement_date"  [ngxMatDatetimePicker]="retirement_date_picker">
+				<mat-datepicker-toggle matSuffix [for]="retirement_date_picker"></mat-datepicker-toggle>
+				<ngx-mat-datetime-picker #retirement_date_picker></ngx-mat-datetime-picker>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="artifactEditor.retirement_authorization" placeholder="Retirement Authorization">
+			</mat-form-field>
+			<mat-form-field>
+				<mat-label>Retirement Timestamp</mat-label>
+				<input matInput [(ngModel)]="artifactEditor.retirement_ts"  [ngxMatDatetimePicker]="retirement_ts_picker">
+				<mat-datepicker-toggle matSuffix [for]="retirement_ts_picker"></mat-datepicker-toggle>
+				<ngx-mat-datetime-picker #retirement_ts_picker></ngx-mat-datetime-picker>
+			</mat-form-field>
+			<br/>
+			<div class="form-button-row" style="width:100%">
+				<button mat-raised-button color="primary" (click)="preUpdateArtifact()">Update</button>
+				<button mat-raised-button color="primary" (click)="preCreateArtifact()">Create</button>
+				<button mat-raised-button color="primary" (click)="preDeleteArtifact()">Delete</button>
+			</div>
+		</fieldset>
+	</div>
+</fieldset>

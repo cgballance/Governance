@@ -1,0 +1,63 @@
+<fieldset>
+	<legend style="font-weight:lighter;">Licensed Artifacts</legend>
+	<div>
+		<ag-grid-angular
+	  		style="width: 100%; height: 200px;"
+	  		class="ag-theme-alpine"
+			rowSelection="single"
+
+	 		[gridOptions]="gridOptions"
+	  		[columnDefs]="columnDefs"
+	  		[rowData]="rowData"
+	  		[modules]="modules"
+		  
+			enableColResize
+			enableSorting
+			enableFilter
+		  
+			(rowSelected)="onRowSelected($event)">
+  		</ag-grid-angular>
+	</div>
+	<div style="display: inline-block;vertical-align:bottom;padding-top:3px;">
+		<button (click)="toggleForm();" class="button-expander" mat-stroked-button><mat-icon [inline]="true">create</mat-icon></button>
+	</div>
+	<div id="licensedForm" [hidden]="isShowForm">
+		<fieldset>
+			<legend style="font-weight:lighter;">License Editor</legend>
+			<mat-form-field>
+				<input matInput [(ngModel)]="licensedEditor.licensed_artifact_id" placeholder="License Id" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="licensedEditor.artifact_id" placeholder="Artifact Id" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="licensedEditor.project_id" placeholder="Project Id" disabled>
+			</mat-form-field>
+			<br/>
+			<mat-form-field>
+				<input matInput [(ngModel)]="licensedEditor.contract" placeholder="Contract">
+			</mat-form-field>
+			<br/>
+			<mat-form-field>
+				<input matInput [(ngModel)]="licensedEditor.vendor" placeholder="Vendor">
+			</mat-form-field>
+			
+			<mat-form-field>
+				<input matInput [(ngModel)]="licensedEditor.approval_architect" placeholder="Approval Architect">
+			</mat-form-field>
+			<mat-form-field>
+				<mat-label>Approval Date</mat-label>
+				<input matInput [(ngModel)]="licensedEditor.approval_ts"  [ngxMatDatetimePicker]="licensed_approval_ts_picker">
+				<mat-datepicker-toggle matSuffix [for]="licensed_approval_ts_picker"></mat-datepicker-toggle>
+				<ngx-mat-datetime-picker #licensed_approval_ts_picker></ngx-mat-datetime-picker>
+			</mat-form-field>
+			<br/>
+			<div class="form-button-row" style="width:100%">
+				<button mat-raised-button color="primary" (click)="preUpdateLicensedArtifact()">Update</button>
+				<button mat-raised-button color="primary" disabled>Create</button>
+				<button mat-raised-button color="primary" disabled>Delete</button>
+				<label>Note: Create/Delete must be done in the Artifacts View</label>
+			</div>
+		</fieldset>
+	</div>
+</fieldset>
