@@ -48,7 +48,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
     post:
       tags:
         - Governance State
@@ -84,7 +84,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance, SUPERUSER_architect]
+            - SUPERUSER_architect
     put:
       tags:
         - Governance State
@@ -113,7 +113,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
   /projects/findByAcronym:           
     get:
       tags:
@@ -146,7 +146,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /projects/findByITOwner:           
     get:
       tags:
@@ -179,7 +179,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /projects/findByBusinessOwner:           
     get:
       tags:
@@ -212,7 +212,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /projects/findPermittedProjectsByArtifactId:           
     get:
       tags:
@@ -246,7 +246,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   "/projects/{project_id}":
     get:
       tags:
@@ -283,7 +283,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
     delete:
       tags:
         - Governance State
@@ -315,7 +315,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance, SUPERUSER_architect]
+            - SUPERUSER_architect
   /components:
     post:
       tags:
@@ -352,7 +352,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
     put:
       tags:
         - Build State
@@ -381,7 +381,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
   /components/findByProjectId:           
     get:
       tags:
@@ -417,7 +417,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /components/findByArtifactId:
     get:
       tags:
@@ -453,7 +453,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /components/findByProjectAcronym:           
     get:
       tags:
@@ -488,7 +488,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   "/components/{component_id}":
     get:
       tags:
@@ -521,7 +521,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
     delete:
       tags:
         - Build State
@@ -553,7 +553,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]      
+            - write_governance    
   /artifacts:
     post:
       tags:
@@ -589,7 +589,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
     put:
       tags:
         - Governance State
@@ -618,7 +618,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
   /artifacts/findByProjectId:
     get:
       tags:
@@ -652,7 +652,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /artifacts/findByStatus:
     get:
       tags:
@@ -685,7 +685,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /artifacts/findByApprover:
     get:
       tags:
@@ -718,7 +718,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
          - governance_auth:
-            - [read_governance]
+            - read_governance
   /artifacts/findByGroupNameAndArtifactName:
     get:
       tags:
@@ -758,7 +758,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
          - governance_auth:
-            - [read_governance]
+            - read_governance
   /artifacts/findApprovedByDateRange:
     get:
       tags:
@@ -800,7 +800,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
          - governance_auth:
-            - [read_governance]
+            - read_governance
   "/artifacts/{artifact_id}":
     get:
       tags:
@@ -837,7 +837,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
          - governance_auth:
-            - [read_governance]
+            - read_governance
     delete:
       tags:
         - Governance State
@@ -863,7 +863,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
          - governance_auth:
-            - [write_governance]
+            - write_governance
   /allowedartifacts:
     post:
       tags:
@@ -899,7 +899,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
     put:
       tags:
         - Governance State
@@ -928,7 +928,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
   /allowedartifacts/findByArtifactId:           
     get:
       tags:
@@ -964,7 +964,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /allowedartifacts/findByProjectId:           
     get:
       tags:
@@ -1000,7 +1000,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /allowedartifacts/findByProjectAcronym:           
     get:
       tags:
@@ -1033,7 +1033,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /allowedartifacts/{allowed_artifact_id}:
     get:
       tags:
@@ -1066,7 +1066,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
     delete:
       tags:
         - Governance State
@@ -1092,7 +1092,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
   /allowedartifacts/deleteAllowedArtifactsByArtifactId:
     post:
       tags:
@@ -1120,7 +1120,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
   /allowedartifacts/deleteAllowedArtifactByProjectIdAndArtifactId:
     post:
       tags:
@@ -1144,7 +1144,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
   /licensedartifacts:
     post:
       tags:
@@ -1180,7 +1180,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
     put:
       tags:
         - Governance State
@@ -1209,7 +1209,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
   /licensedartifacts/findByArtifactId:           
     get:
       tags:
@@ -1245,7 +1245,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /licensedartifacts/findByProjectId:           
     get:
       tags:
@@ -1279,7 +1279,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /licensedartifacts/findByProjectAcronym:           
     get:
       tags:
@@ -1312,7 +1312,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /licensedartifacts/findByVendor:           
     get:
       tags:
@@ -1345,7 +1345,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /licensedartifacts/{licencedArtifactId}:
     get:
       tags:
@@ -1382,7 +1382,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
     delete:
       tags:
         - Governance State
@@ -1408,7 +1408,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
   /licensedartifacts/deleteLicensedArtifactsByArtifactId:
     post:
       tags:
@@ -1436,7 +1436,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
   /licensedartifacts/deleteLicensedArtifactByProjectIdAndArtifactId:
     post:
       tags:
@@ -1460,7 +1460,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
   /builds:
     post:
       tags:
@@ -1496,7 +1496,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
     put:
       tags:
         - Build State
@@ -1525,7 +1525,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
   /builds/findByComponentId:           
     get:
       tags:
@@ -1559,7 +1559,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /builds/findByProjectId:           
     get:
       tags:
@@ -1593,7 +1593,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /builds/findByProjectAcronym:           
     get:
       tags:
@@ -1626,7 +1626,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   "/builds/{build_id}":
     get:
       tags:
@@ -1659,7 +1659,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
     delete:
       tags:
         - Build State
@@ -1685,7 +1685,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]           
+            - write_governance         
   /builditems:
     post:
       tags:
@@ -1721,7 +1721,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
     put:
       tags:
         - Build State
@@ -1750,7 +1750,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
   "/builditems/{builditem_id}":
     get:
       tags:
@@ -1783,7 +1783,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
   /builditems/findByBuildId:           
     get:
       tags:
@@ -1817,7 +1817,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
     delete:
       tags:
         - Build State
@@ -1843,7 +1843,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [write_governance]
+            - write_governance
   /experimental/findProjectComponentBuildsByArtifactId:           
     get:
       tags:
@@ -1877,14 +1877,12 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
         - governance_auth:
-            - [read_governance]
+            - read_governance
 externalDocs:
   description: Find out more about Governing Maven library usage for your development team.
   url: https://localhost:8443/index.html
 servers:
   - url: https://localhost:8443/v1
-#security:
-#  - governance_auth: []
 components:
   securitySchemes:
     governance_auth:
