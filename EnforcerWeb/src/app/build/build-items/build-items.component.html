@@ -1,0 +1,55 @@
+<fieldset>
+	<legend style="font-weight:lighter;">Build Items</legend>
+	<div>
+		<ag-grid-angular
+	  		style="width: 100%; height: 200px;"
+	  		class="ag-theme-alpine"
+			rowSelection="single"
+
+	 		[gridOptions]="gridOptions"
+	  		[columnDefs]="columnDefs"
+	  		[rowData]="rowData"
+	  		[modules]="modules"
+		  
+			enableColResize
+			enableSorting
+			enableFilter
+		  
+			(rowSelected)="onRowSelected($event)">
+  		</ag-grid-angular>
+	</div>
+	<div style="display: inline-block;vertical-align:bottom;padding-top:3px;">
+		<button (click)="toggleForm();" class="button-expander" mat-stroked-button><mat-icon [inline]="true">search</mat-icon></button>
+	</div>
+	<div id="buildItemsForm" [hidden]="isShowForm">
+		<fieldset>
+			<legend style="font-weight:lighter;">Build Item</legend>
+			<mat-form-field>
+				<input matInput [(ngModel)]="builditemEditor.builditem_id" placeholder="BuildItem Id" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="builditemEditor.build_id" placeholder="Build Id" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="builditemEditor.group_name" placeholder="Group Name" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="builditemEditor.artifact_name" placeholder="Artifact Name" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="builditemEditor.version_name" placeholder="Version Name" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="builditemEditor.artifact_status_snapshot" placeholder="Status Snapshot" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="builditemEditor.allowed" placeholder="Allowed" disabled>
+			</mat-form-field>
+		</fieldset>
+		
+		<br/>
+		<div class="form-button-row" style="width:100%">
+			<button mat-raised-button color="primary" (click)="preRequestPermit()">Request Permit</button>
+		</div>
+	</div>
+</fieldset>

@@ -1,0 +1,22 @@
+@import "../../../../node_modules/@ag-grid-community/all-modules/dist/styles/ag-grid.scss";
+@import "../../../../node_modules/@ag-grid-community/all-modules/dist/styles/ag-theme-alpine/sass/ag-theme-alpine.scss";
+section {
+    display: table;
+  }
+  
+  .form-button-row {
+    display: table-cell;
+    width: 490px;
+  }
+  
+  .form-button-row .mat-button-base {
+    margin: 6px 6px 6px 0;
+  }
+  
+  .button-expander {
+  height: 20px;
+  width: 20px;
+  line-height: 20px;
+  text-align: center;
+  }
+  

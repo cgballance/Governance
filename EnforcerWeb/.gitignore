@@ -91,3 +91,6 @@ rebel.xml
 # Node
 node/
 node_modules/
+
+# Unignore application directory
+!/src/app/build

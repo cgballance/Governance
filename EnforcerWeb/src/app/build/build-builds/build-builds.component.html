@@ -1,0 +1,54 @@
+<fieldset>
+	<legend style="font-weight:lighter;">Builds</legend>
+	<div>
+		<ag-grid-angular
+	  		style="width: 100%; height: 200px;"
+	  		class="ag-theme-alpine"
+			rowSelection="single"
+
+	 		[gridOptions]="gridOptions"
+	  		[columnDefs]="columnDefs"
+	  		[rowData]="rowData"
+	  		[modules]="modules"
+		  
+			enableColResize
+			enableSorting
+			enableFilter
+		  
+			(rowSelected)="onRowSelected($event)">
+  		</ag-grid-angular>
+	</div>
+	<div style="display: inline-block;vertical-align:bottom;padding-top:3px;">
+		<button (click)="toggleForm();" class="button-expander" mat-stroked-button><mat-icon [inline]="true">search</mat-icon></button>
+	</div>
+	<div id="buildBuildsForm" [hidden]="isShowForm">
+		<fieldset>
+			<legend style="font-weight:lighter;">Build</legend>
+			<mat-form-field>
+				<input matInput [(ngModel)]="buildEditor.build_id" placeholder="Build Id" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<mat-label>Build Timestamp</mat-label>
+				<input matInput [(ngModel)]="buildEditor.build_ts"  [ngxMatDatetimePicker]="build_build_ts" disabled>
+				<mat-datepicker-toggle matSuffix [for]="build_build_ts" disabled ></mat-datepicker-toggle>
+				<ngx-mat-datetime-picker #build_build_ts disabled></ngx-mat-datetime-picker>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="buildEditor.project_id" placeholder="Project Id" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="buildEditor.component_id" placeholder="Component Id" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="buildEditor.component_version" placeholder="Component Version" disabled>
+			</mat-form-field>
+			<mat-form-field>
+				<input matInput [(ngModel)]="buildEditor.source" placeholder="Source" disabled>
+			</mat-form-field>
+			<br/>
+			<mat-form-field id="infractions_text_area">
+				<textarea matInput [(ngModel)]="buildEditor.infractions" placeholder="Infractions" rows="5" disabled></textarea>
+			</mat-form-field>
+		</fieldset>
+	</div>
+</fieldset>
