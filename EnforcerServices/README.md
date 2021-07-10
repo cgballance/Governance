@@ -57,7 +57,7 @@ See:
 
 
 #### Developer Notes
-Changes are first made to the governance.yaml API specification.  Executing *maven install* will, if the api is properly defined, will result in
+Changes are first made to the governance.yaml API specification.  Executing *maven install* will, if the api is properly defined, result in
 java files being produced in target/generated-sources/openapi/src/generated/java.  Methods that are created in the io.reflectoring.api.*Delegate.java
 files are what are copied into the com.webforged.enforcer.management.services appropriate file for implementation.  Annotations are used for dealing with security roles, so check out the examples.  Typically, all Build State related methods will only have Read access.  It would be bad to let editing take place on those things.  Your build toolchain(s) should be the only thing(s) that populate the build related data in the system.  There are two
 examples that specify what is needed to make this happen.  Maven and Gradle plugins were developed to interface with the database.  The TestProject contains implementation for both that show how they interact.  Applications should NOT know about these plugins.  DevOps procedures to modify application pom.xml or build.gradle as required should be developed.
